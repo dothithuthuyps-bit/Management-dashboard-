@@ -58,7 +58,7 @@ header.top{
 .card{
   background:linear-gradient(160deg,var(--panel-2) 0%,var(--panel) 55%);
   border:1px solid var(--line);border-radius:var(--radius);
-  padding:26px 28px 20px;display:flex;flex-direction:column;min-height:380px;
+  padding:26px 28px 20px;display:flex;flex-direction:column;min-height:460px;
   position:relative;
 }
 .card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
@@ -67,28 +67,26 @@ header.top{
   text-transform:uppercase;color:var(--teal);
 }
 .card-idx{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint)}
-.big{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(46px,5vw,64px);line-height:1;}
-.big small{font-size:.38em;color:var(--ink-dim);margin-left:6px}
-.delta{margin-top:10px;font-size:12.5px;}
-.substats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.big{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(40px,4.5vw,56px);line-height:1;}
+.delta{margin-top:6px;font-size:12.5px;}
+.substats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;margin-bottom:16px}
 .sub{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
 .sub .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-faint);text-transform:uppercase}
-.sub .val{font-weight:600;font-size:15px;margin-top:3px}
-.sub .val.red{color:var(--red)}
-.chart-box{position:relative;height:96px;margin-top:auto;padding-top:16px}
-.card-q{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-style:italic;color:var(--ink-faint);font-size:12.5px;}
-.head-chart{position:absolute;right:28px;top:64px;width:170px;height:56px;opacity:.9}
+.sub .val{font-weight:600;font-size:14px;margin-top:3px;white-space:nowrap;}
+.chart-box{position:relative;height:180px;margin-top:auto;width:100%;}
+.card-q{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-style:italic;color:var(--ink-faint);font-size:12.5px;}
 .chips{display:flex;gap:8px;margin-bottom:16px}
 .chip{
   font-size:11px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);
   color:var(--ink-dim);cursor:pointer;background:transparent;
 }
 .chip.active{background:var(--teal);color:#04211d;font-weight:600}
+.prj-scroll{max-height:220px;overflow-y:auto;padding-right:4px;}
 .prj{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
-.prj .nm{font-family:'Fraunces',serif;font-size:15.5px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prj .bar{width:130px;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.prj .nm{font-family:'Fraunces',serif;font-size:14px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prj .bar{width:100px;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
 .prj .bar i{display:block;height:100%;}
-.prj .tag{width:118px;text-align:right;font-size:11.5px;font-weight:600;}
+.prj .tag{width:110px;text-align:right;font-size:11.5px;font-weight:600;}
 .prj .tag span{display:block;color:var(--ink-faint);font-size:10px}
 .error-msg{
   color:var(--red);font-size:12px;background:rgba(255,107,107,0.08);
@@ -115,65 +113,63 @@ header.top{
 
   <section class="hero">
     <div id="dateLine" style="font-family:'JetBrains Mono';font-size:10px;color:var(--ink-faint);margin-bottom:8px;">—</div>
-    <h1 class="serif" style="font-size:40px;line-height:1.1;">The operational health dashboard</h1>
+    <h1 class="serif" style="font-size:36px;line-height:1.1;letter-spacing:-0.02em;">Continuous Operations &amp; Trend Suite</h1>
   </section>
 
   <main class="grid">
-    <!-- CARD 1: REVENUE -->
+    <!-- CARD 1: REVENUE TRENDS -->
     <section class="card" id="card-revenue">
-      <div class="card-head"><span class="card-title">Revenue vs Plan</span><span class="card-idx">01 · Growth</span></div>
+      <div class="card-head"><span class="card-title">Revenue Progress &amp; Pipeline Timeline</span><span class="card-idx">01 · Growth</span></div>
       <div class="big" id="revBig">—</div>
       <div class="delta" id="revDelta"></div>
-      <div class="head-chart"><canvas id="revSpark"></canvas></div>
       <div class="substats">
-        <div class="sub"><div class="lbl">Booked</div><div class="val" id="revBooked">—</div></div>
-        <div class="sub"><div class="lbl">Plan</div><div class="val" id="revPlan">—</div></div>
-        <div class="sub"><div class="lbl">Pipeline</div><div class="val" id="revPipe">—</div></div>
+        <div class="sub"><div class="lbl">Latest Booked</div><div class="val" id="revBooked">—</div></div>
+        <div class="sub"><div class="lbl">Latest Plan</div><div class="val" id="revPlan">—</div></div>
+        <div class="sub"><div class="lbl">Latest Pipeline</div><div class="val" id="revPipe">—</div></div>
       </div>
       <div class="chart-box"><canvas id="revChart"></canvas></div>
-      <div class="card-q">Are we growing?</div>
+      <div class="card-q">What is the structural velocity of our target attainment?</div>
     </section>
 
-    <!-- CARD 2: MARGIN -->
+    <!-- CARD 2: MARGIN LIFTCURVES -->
     <section class="card" id="card-margin">
-      <div class="card-head"><span class="card-title">Gross Margin</span><span class="card-idx">02 · ROI</span></div>
+      <div class="card-head"><span class="card-title">Gross Margin Historical Variance</span><span class="card-idx">02 · ROI</span></div>
       <div class="big" id="gmBig">—</div>
       <div class="delta" id="gmDelta"></div>
-      <div class="head-chart"><canvas id="gmSpark"></canvas></div>
       <div class="substats">
-        <div class="sub"><div class="lbl">Target</div><div class="val" id="gmTarget">—</div></div>
-        <div class="sub"><div class="lbl">YTD Avg</div><div class="val" id="gmYtd">—</div></div>
-        <div class="sub"><div class="lbl">Best</div><div class="val" id="gmBest">—</div><div class="note" id="gmBestNote" style="font-size:10px;color:var(--ink-faint)"></div></div>
+        <div class="sub"><div class="lbl">Latest Target</div><div class="val" id="gmTarget">—</div></div>
+        <div class="sub"><div class="lbl">Historical Avg</div><div class="val" id="gmYtd">—</div></div>
+        <div class="sub"><div class="lbl">Peak Period</div><div class="val" id="gmBest">—</div><div class="note" id="gmBestNote" style="font-size:9px;color:var(--ink-faint)"></div></div>
       </div>
       <div class="chart-box"><canvas id="gmChart"></canvas></div>
-      <div class="card-q">Are we earning?</div>
+      <div class="card-q">Are pricing strategy mechanics matching real allocations?</div>
     </section>
 
-    <!-- CARD 3: PROJECTS -->
+    <!-- CARD 3: PROJECTS DISTRIBUTION -->
     <section class="card" id="card-projects">
-      <div class="card-head"><span class="card-title">Project Contribution Margin ROI</span><span class="card-idx">03 · ROI</span></div>
+      <div class="card-head"><span class="card-title">Project Contribution Margin Distributions</span><span class="card-idx">03 · ROI</span></div>
       <div class="chips" id="prjChips">
         <button class="chip active" data-f="all">All</button>
         <button class="chip" data-f="healthy">Healthy</button>
         <button class="chip" data-f="action">Action required</button>
       </div>
-      <div id="prjList"></div>
-      <div class="card-q" style="margin-top:auto">Are we allocating resourcing efficiently?</div>
+      <div class="prj-scroll" id="prjList"></div>
+      <div class="card-q" style="margin-top:auto">Where are resources delivering maximum relative return?</div>
     </section>
 
-    <!-- CARD 4: CASHFLOW -->
+    <!-- CARD 4: CASHFLOW MATRIX -->
     <section class="card" id="card-cashflow">
-      <div class="card-head"><span class="card-title">Cashflow: DSO &amp; Net Payment Gap</span><span class="card-idx">04 · Cashflow</span></div>
+      <div class="card-head"><span class="card-title">Liquidity Dynamics &amp; DSO Performance</span><span class="card-idx">04 · Cashflow</span></div>
       <div class="big" id="cfBig">—</div>
       <div class="delta" id="cfDelta"></div>
-      <div class="head-chart"><canvas id="cfSpark"></canvas></div>
       <div class="substats">
         <div class="sub"><div class="lbl">Collected</div><div class="val" id="cfCollected">—</div></div>
         <div class="sub"><div class="lbl">Overdue</div><div class="val red" id="cfOverdue">—</div></div>
-        <div class="sub"><div class="lbl">Net Gap</div><div class="val" id="cfGap">—</div></div>
+        <div class="sub"><div class="lbl">Net Gap Variance</div><div class="val" id="cfGap">—</div></div>
       </div>
-      <div class="alert" id="cfAlert" hidden><span id="cfAlertTxt">⚠ invoices > 60 days.</span></div>
-      <div class="card-q">Are we collecting?</div>
+      <div class="chart-box"><canvas id="cfChart"></canvas></div>
+      <div class="alert" id="cfAlert" hidden><span id="cfAlertTxt">⚠ Critical warning indicators</span></div>
+      <div class="card-q">Are collection cycles keeping execution buffers clear?</div>
     </section>
   </main>
 </div>
@@ -182,6 +178,7 @@ header.top{
 const $ = id => document.getElementById(id);
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
+// Localized parsing matrix configuration to cleanly unpack raw sheet records ("S$1.840.000", "0,35", etc)
 function cleanNum(val, isMargin = false) {
   if (val === undefined || val === null || val === "") return 0;
   if (typeof val === "number") return val;
@@ -215,6 +212,7 @@ const fmtM = v => {
 
 const pct = (v, d = 0) => (cleanNum(v) * 100).toFixed(d) + "%";
 
+// Dynamic sorting function to handle text date metrics safely (supports text tags or YYYY-MM-DD/YYYY-MM)
 const monLbl = m => {
   if(!m) return "—";
   let str = String(m).trim();
@@ -239,11 +237,11 @@ function findField(row, targets) {
 async function fetchTabRaw(tabName) {
   const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Tab text response error.`);
+  if (!res.ok) throw new Error(`Network tracking block failed.`);
   const text = await res.text();
-  if (text.includes("<!DOCTYPE html>") || text.includes("SignIn")) throw new Error(`Sheet access restricted. Check sharing options.`);
+  if (text.includes("<!DOCTYPE html>") || text.includes("SignIn")) throw new Error(`Sheet authentication wall hit.`);
   const parsed = Papa.parse(text, {header:true, skipEmptyLines:true});
-  if (!parsed.data || parsed.data.length === 0) throw new Error(`Tab has no rows.`);
+  if (!parsed.data || parsed.data.length === 0) throw new Error(`Tab contains no lines.`);
   return parsed.data;
 }
 
@@ -251,57 +249,148 @@ function showCardError(cardId, message) {
   const container = $(cardId);
   const errDiv = document.createElement("div");
   errDiv.className = "error-msg";
-  errDiv.textContent = `⚠️ Configuration Alert: Check if the tab name or headers match in Google Sheets. Details: ${message}`;
+  errDiv.textContent = `⚠️ Sheet link warning: ${message}`;
   container.appendChild(errDiv);
 }
 
-// 01 REVENUE LOADER
+let activeCharts = {};
+function killChart(name) {
+  if (activeCharts[name]) {
+    activeCharts[name].destroy();
+    delete activeCharts[name];
+  }
+}
+
+// 01 REVENUE ENGINE (Full Timeline Series Implementation)
 async function loadRevenue() {
   try {
+    killChart("revChart");
     const data = await fetchTabRaw("revenue");
     const rL = data[data.length - 1];
+    
     const booked = cleanNum(findField(rL, ["booked_usd", "booked_sgd", "booked", "real"]));
     const plan = cleanNum(findField(rL, ["plan_usd", "plan_sgd", "plan", "target"]));
     const attain = plan > 0 ? booked / plan : 0;
     
-    $("revBig").textContent = Math.round(attain * 100) + "%";
-    $("revDelta").innerHTML = attain ? (attain >= 1 ? `<span style="color:var(--teal)">↗ <b>${pct(Math.abs(attain-1))} ahead</b></span>` : `<span style="color:var(--red)">↘ <b>${pct(Math.abs(attain-1))} behind</b></span>`) : "—";
+    $("revBig").textContent = plan > 0 ? Math.round(attain * 100) + "%" : "—";
+    $("revDelta").innerHTML = attain ? (attain >= 1 ? `<span style="color:var(--teal)">↗ <b>${pct(Math.abs(attain-1))} ahead of plan</b></span>` : `<span style="color:var(--red)">↘ <b>${pct(Math.abs(attain-1))} behind plan</b></span>`) : "—";
+    
     $("revBooked").textContent = fmtM(booked);
     $("revPlan").textContent = fmtM(plan);
     $("revPipe").textContent = fmtM(findField(rL, ["pipeline_usd", "pipeline_sgd", "pipeline"]));
     
-    const labels = data.map(r => monLbl(findField(r, ["month", "date"])));
-    new Chart($("revSpark"), {type:"line", options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}, data:{labels,datasets:[{data:data.map(r=>cleanNum(findField(r,["booked_usd","booked_sgd","booked"]))),borderColor:css("--green"),borderWidth:2,fill:false}]}});
-    new Chart($("revChart"), {type:"line", options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"bottom"}},scales:{x:{display:false},y:{display:false}}}, data:{labels,datasets:[{label:"Booked",data:data.map(r=>cleanNum(findField(r,["booked_usd","booked_sgd","booked"]))),borderColor:css("--teal")},{label:"Plan",data:data.map(r=>cleanNum(findField(r,["plan_usd","plan_sgd","plan"]))),borderColor:css("--ink-faint"),borderDash:[5,5]}]}});
+    const labels = data.map(r => monLbl(findField(r, ["month", "date", "day"])));
+    
+    activeCharts["revChart"] = new Chart($("revChart"), {
+      type: "line",
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "top", labels: { color: css("--ink-dim"), font: { size: 10 } } },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          x: { grid: { color: css("--line") }, ticks: { color: css("--ink-faint") } },
+          y: { grid: { color: css("--line") }, ticks: { color: css("--ink-faint") } }
+        }
+      },
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Booked Revenue",
+            data: data.map(r => cleanNum(findField(r, ["booked_usd", "booked_sgd", "booked", "real"]))),
+            borderColor: css("--teal"),
+            backgroundColor: "rgba(47, 214, 195, 0.05)",
+            fill: true,
+            tension: 0.2
+          },
+          {
+            label: "Plan Baseline",
+            data: data.map(r => cleanNum(findField(r, ["plan_usd", "plan_sgd", "plan", "target"]))),
+            borderColor: css("--ink-faint"),
+            borderDash: [6, 4],
+            fill: false,
+            tension: 0
+          },
+          {
+            label: "Pipeline Growth",
+            data: data.map(r => cleanNum(findField(r, ["pipeline_usd", "pipeline_sgd", "pipeline"]))),
+            borderColor: css("--amber"),
+            borderDash: [2, 2],
+            fill: false,
+            tension: 0.2
+          }
+        ]
+      }
+    });
   } catch(e) { showCardError("card-revenue", e.message); }
 }
 
-// 02 MARGIN LOADER
+// 02 MARGIN ENGINE (Full Timeline Series Implementation)
 async function loadMargin() {
   try {
+    killChart("gmChart");
     const data = await fetchTabRaw("margin");
     const mL = data[data.length - 1];
     const mP = data[data.length - 2] || {};
-    const cur = cleanNum(findField(mL, ["gross_margin_pct", "gross_margin", "margin"]), true);
+    
+    const cur = cleanNum(findField(mL, ["gross_margin_pct", "gross_margin", "margin", "actual"]), true);
     const tgt = cleanNum(findField(mL, ["target_pct", "target", "plan"]), true);
     const past = cleanNum(findField(mP, ["gross_margin_pct", "gross_margin", "margin"]), true);
     
     $("gmBig").textContent = pct(cur, 1);
-    $("gmDelta").innerHTML = past ? `<span style="color:${(cur-past)>=0?'var(--teal)':'var(--red)'}"><b>${((cur-past)*100).toFixed(1)}pp MoM</b></span>` : "—";
+    $("gmDelta").innerHTML = past ? `<span style="color:${(cur-past)>=0?'var(--teal)':'var(--red)'}"><b>${((cur-past)*100).toFixed(1)}pp MoM Variance</b></span>` : "—";
+    
     $("gmTarget").textContent = pct(tgt, 1);
-    $("gmYtd").textContent = pct(data.reduce((s,r)=>s+cleanNum(findField(r,["gross_margin_pct","gross_margin","margin"]),true),0)/data.length, 1);
+    $("gmYtd").textContent = pct(data.reduce((s,r) => s + cleanNum(findField(r, ["gross_margin_pct", "gross_margin", "margin"]), true), 0) / data.length, 1);
     
-    const best = data.reduce((a,b)=>cleanNum(findField(b,["gross_margin_pct","gross_margin"]),true)>cleanNum(findField(a,["gross_margin_pct","gross_margin"]),true)?b:a);
-    $("gmBest").textContent = pct(findField(best,["gross_margin_pct","gross_margin"]), 1);
-    $("gmBestNote").textContent = monLbl(findField(best,["month","date"]));
+    const best = data.reduce((a,b) => cleanNum(findField(b, ["gross_margin_pct", "gross_margin"]), true) > cleanNum(findField(a, ["gross_margin_pct", "gross_margin"]), true) ? b : a);
+    $("gmBest").textContent = pct(findField(best, ["gross_margin_pct", "gross_margin"]), 1);
+    $("gmBestNote").textContent = "Achieved " + monLbl(findField(best, ["month", "date", "day"]));
     
-    const labels = data.map(r => monLbl(findField(r, ["month", "date"])));
-    new Chart($("gmSpark"), {type:"line", options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}, data:{labels,datasets:[{data:data.map(r=>cleanNum(findField(r,["gross_margin_pct","gross_margin"]),true)),borderColor:css("--teal"),borderWidth:2}]}});
-    new Chart($("gmChart"), {type:"line", options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"bottom"}},scales:{x:{display:false},y:{display:false}}}, data:{labels,datasets:[{label:"Margin",data:data.map(r=>cleanNum(findField(r,["gross_margin_pct","gross_margin"]),true)),borderColor:css("--teal")},{label:"Target",data:data.map(r=>cleanNum(findField(r,["target_pct","target"]),true)),borderColor:css("--ink-faint"),borderDash:[5,5]}]}});
+    const labels = data.map(r => monLbl(findField(r, ["month", "date", "day"])));
+    
+    activeCharts["gmChart"] = new Chart($("gmChart"), {
+      type: "line",
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "top", labels: { color: css("--ink-dim"), font: { size: 10 } } }
+        },
+        scales: {
+          x: { grid: { color: css("--line") }, ticks: { color: css("--ink-faint") } },
+          y: { grid: { color: css("--line") }, ticks: { color: css("--ink-faint"), callback: v => (v * 100) + "%" } }
+        }
+      },
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Gross Margin %",
+            data: data.map(r => cleanNum(findField(r, ["gross_margin_pct", "gross_margin", "margin"]), true)),
+            borderColor: css("--green"),
+            backgroundColor: "rgba(143, 227, 168, 0.05)",
+            fill: true,
+            tension: 0.1
+          },
+          {
+            label: "Margin Target Target",
+            data: data.map(r => cleanNum(findField(r, ["target_pct", "target", "plan"]), true)),
+            borderColor: css("--red"),
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0
+          }
+        ]
+      }
+    });
   } catch(e) { showCardError("card-margin", e.message); }
 }
 
-// 03 PROJECTS LOADER
+// 03 PROJECTS ENGINE
 let globalProjects = [];
 async function loadProjects() {
   try {
@@ -331,7 +420,7 @@ function renderProjectsView(filter) {
   }).sort((a,b)=>cleanNum(findField(b,["cm_roi_pct","cm_roi","roi"]))-cleanNum(findField(a,["cm_roi_pct","cm_roi","roi"])));
 
   listContainer.innerHTML = filtered.map(p => {
-    const title = findField(p, ["project", "name"]) || "Project";
+    const title = findField(p, ["project", "name"]) || "Project Module";
     const roi = cleanNum(findField(p, ["cm_roi_pct", "cm_roi", "roi"]));
     const stat = findField(p, ["status"]) || "Active";
     return `
@@ -340,35 +429,73 @@ function renderProjectsView(filter) {
         <div class="bar"><i style="width:${Math.min(100,roi*100)}%;background:${colorOf(stat)}"></i></div>
         <div class="tag" style="color:${colorOf(stat)}">${pct(roi)}<span>${stat}</span></div>
       </div>`;
-  }).join("") || `<div style="color:var(--ink-faint);padding:20px 0">No items available in this view.</div>`;
+  }).join("") || `<div style="color:var(--ink-faint);padding:20px 0">No records found.</div>`;
 }
 
-// 04 CASHFLOW LOADER
+// 04 CASHFLOW HISTORICAL PROGRESSION
 async function loadCashflow() {
   try {
+    killChart("cfChart");
     const data = await fetchTabRaw("cashflow");
     const cL = data[data.length - 1];
+    
     const dso = cleanNum(findField(cL, ["dso_days", "dso"]));
     const targetDso = cleanNum(findField(cL, ["target_dso", "target"]));
     
-    $("cfBig").innerHTML = dso ? dso + "<small>days</small>" : "—";
-    $("cfDelta").innerHTML = dso ? `<span style="color:${(dso-targetDso)<=0?'var(--teal)':'var(--red)'}"><b>${Math.abs(dso-targetDso)} days ${dso<=targetDso?'under':'over'} plan</b></span>` : "—";
+    $("cfBig").innerHTML = dso ? dso + "<small>days DSO</small>" : "—";
+    $("cfDelta").innerHTML = dso ? `<span style="color:${(dso-targetDso)<=0?'var(--teal)':'var(--red)'}"><b>${Math.abs(dso-targetDso)} days ${dso<=targetDso?'under':'over'} operations strategy plan</b></span>` : "—";
+    
     $("cfCollected").textContent = fmtM(findField(cL, ["collected_usd", "collected_sgd", "collected"]));
     $("cfOverdue").textContent = fmtM(findField(cL, ["overdue_usd", "overdue_sgd", "overdue"]));
-    $("cfGap").textContent = dso ? (dso - targetDso) + " days" : "—";
+    $("cfGap").textContent = dso ? (dso - targetDso) + " days offset" : "—";
     
     const inv = cleanNum(findField(cL, ["invoices_over_60d", "over_60", "invoices"]));
     if(inv > 0) {
       $("cfAlert").hidden = false;
-      $("cfAlertTxt").textContent = `⚠ ${inv} invoice${inv>1?'s':''} > 60 days overdue.`;
+      $("cfAlertTxt").textContent = `⚠️ Balance Exposure: ${inv} execution records require immediate collection action.`;
+    } else {
+      $("cfAlert").hidden = true;
     }
     
-    const labels = data.map(r => monLbl(findField(r, ["month", "date"])));
-    new Chart($("cfSpark"), {type:"bar", options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}, data:{labels,datasets:[{data:data.map(r=>cleanNum(findField(r,["dso_days","dso"]))),backgroundColor:css("--line")}]}});
+    const labels = data.map(r => monLbl(findField(r, ["month", "date", "day"])));
+    
+    activeCharts["cfChart"] = new Chart($("cfChart"), {
+      type: "bar",
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "top", labels: { color: css("--ink-dim"), font: { size: 10 } } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: css("--ink-faint") } },
+          y: { grid: { color: css("--line") }, ticks: { color: css("--ink-faint") } }
+        }
+      },
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "DSO Days Trend",
+            data: data.map(r => cleanNum(findField(r, ["dso_days", "dso"]))),
+            backgroundColor: data.map((r, i) => i === data.length - 1 ? css("--teal") : css("--line")),
+            borderRadius: 4
+          },
+          {
+            type: "line",
+            label: "DSO Target Ceiling",
+            data: data.map(r => cleanNum(findField(r, ["target_dso", "target"]))),
+            borderColor: css("--red"),
+            borderDash: [4, 4],
+            fill: false
+          }
+        ]
+      }
+    });
   } catch(e) { showCardError("card-cashflow", e.message); }
 }
 
-// INTERFACES
+// MANAGEMENT SUITE ROUTER
 document.getElementById("prjChips").addEventListener("click", e => {
   const b = e.target.closest(".chip"); if (!b) return;
   document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
@@ -378,7 +505,6 @@ document.getElementById("prjChips").addEventListener("click", e => {
 
 function init() {
   $("dateLine").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).toUpperCase();
-  // Clear any existing debug divs before running loaders
   document.querySelectorAll(".error-msg").forEach(el => el.remove());
   
   loadRevenue();
