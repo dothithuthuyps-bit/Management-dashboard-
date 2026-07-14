@@ -8,7 +8,6 @@
 <script>
 const CONFIG = {
   SHEET_ID: "1o66sHJtGzc8Xwo__4byO5iExH1VLNZg7", 
-  TABS: ["revenue", "margin", "projects", "cashflow"],
   CURRENCY: "SGD"
 };
 </script>
@@ -35,15 +34,12 @@ const CONFIG = {
   --radius:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--ink);
   font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
 .serif{font-family:'Fraunces',Georgia,serif}
-.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
-
 .wrap{max-width:1280px;margin:0 auto;padding:0 28px 72px}
 header.top{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -55,136 +51,76 @@ header.top{
   color:#04211d;display:grid;place-items:center;
   font-family:'Fraunces',serif;font-weight:600;font-size:15px;
 }
-.brand .name{font-weight:600;font-size:14px;letter-spacing:.01em}
+.brand .name{font-weight:600;font-size:14px;}
 .brand .sub{font-size:10px;letter-spacing:.22em;color:var(--ink-faint);text-transform:uppercase}
-.top-right{display:flex;align-items:center;gap:10px}
-.pill{
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;
-  padding:6px 12px;border-radius:999px;border:1px solid var(--line);
-  color:var(--ink-dim);text-transform:uppercase;display:flex;align-items:center;gap:7px;
-}
-.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--amber)}
-.pill.live .dot{background:var(--teal);box-shadow:0 0 8px var(--teal)}
-button.refresh{
-  background:transparent;border:1px solid var(--line);color:var(--ink-dim);
-  padding:6px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;
-  font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
-  transition:border-color .15s,color .15s;
-}
-button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
-
-.hero{padding:46px 0 34px}
-.eyebrow{
-  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;
-  text-transform:uppercase;color:var(--teal);margin-bottom:14px;
-}
-.hero h1{
-  font-family:'Fraunces',serif;font-weight:500;font-size:clamp(34px,4.6vw,54px);
-  line-height:1.05;letter-spacing:-.01em;max-width:640px;
-}
-.hero p{color:var(--ink-dim);font-style:italic;margin-top:14px;font-size:13.5px}
-.hero .greet{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:8px}
-
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 @media(max-width:920px){.grid{grid-template-columns:1fr}}
 .card{
   background:linear-gradient(160deg,var(--panel-2) 0%,var(--panel) 55%);
   border:1px solid var(--line);border-radius:var(--radius);
   padding:26px 28px 20px;display:flex;flex-direction:column;min-height:380px;
+  position:relative;
 }
 .card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
 .card-title{
   font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;
   text-transform:uppercase;color:var(--teal);
 }
-.card-idx{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-faint);text-transform:uppercase}
-.big{
-  font-family:'Fraunces',serif;font-weight:500;font-size:clamp(46px,5vw,64px);
-  line-height:1;letter-spacing:-.01em;
-}
-.big small{font-size:.38em;color:var(--ink-dim);font-weight:400;margin-left:6px}
-.delta{margin-top:10px;font-size:12.5px;color:var(--ink-dim)}
-.delta b{font-weight:600}
-.delta .up{color:var(--teal)} .delta .down{color:var(--teal)} .delta .bad{color:var(--red)}
+.card-idx{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-faint)}
+.big{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(46px,5vw,64px);line-height:1;}
+.big small{font-size:.38em;color:var(--ink-dim);margin-left:6px}
+.delta{margin-top:10px;font-size:12.5px;}
 .substats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
-.sub{
-  background:rgba(255,255,255,.02);border:1px solid var(--line);
-  border-radius:10px;padding:10px 12px;
-}
-.sub .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+.sub{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.sub .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-faint);text-transform:uppercase}
 .sub .val{font-weight:600;font-size:15px;margin-top:3px}
 .sub .val.red{color:var(--red)}
-.sub .note{font-size:9.5px;color:var(--ink-faint);margin-top:1px}
 .chart-box{position:relative;height:96px;margin-top:auto;padding-top:16px}
-.card-q{
-  margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
-  font-style:italic;color:var(--ink-faint);font-size:12.5px;
-}
+.card-q{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-style:italic;color:var(--ink-faint);font-size:12.5px;}
 .head-chart{position:absolute;right:28px;top:64px;width:170px;height:56px;opacity:.9}
-.card{position:relative}
-@media(max-width:560px){.head-chart{display:none}.substats{grid-template-columns:1fr 1fr}}
-
 .chips{display:flex;gap:8px;margin-bottom:16px}
 .chip{
   font-size:11px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);
-  color:var(--ink-dim);cursor:pointer;background:transparent;transition:all .15s;
+  color:var(--ink-dim);cursor:pointer;background:transparent;
 }
-.chip.active,.chip:hover{background:var(--teal);border-color:var(--teal);color:#04211d;font-weight:600}
-.chip:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.chip.active{background:var(--teal);color:#04211d;font-weight:600}
 .prj{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
-.prj:last-child{border-bottom:none}
-.prj .nm{font-family:'Fraunces',serif;font-size:15.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prj.action .nm{color:var(--red)}
-.prj .bar{width:130px;height:4px;border-radius:2px;background:var(--line);overflow:hidden;flex-shrink:0}
-.prj .bar i{display:block;height:100%;border-radius:2px}
-.prj .tag{width:118px;text-align:right;font-size:11.5px;font-weight:600;flex-shrink:0}
-.prj .tag span{display:block;font-weight:400;color:var(--ink-faint);font-size:10px}
-
+.prj .nm{font-family:'Fraunces',serif;font-size:15.5px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prj .bar{width:130px;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.prj .bar i{display:block;height:100%;}
+.prj .tag{width:118px;text-align:right;font-size:11.5px;font-weight:600;}
+.prj .tag span{display:block;color:var(--ink-faint);font-size:10px}
+.error-msg{
+  color:var(--red);font-size:12px;background:rgba(255,107,107,0.08);
+  padding:10px;border-radius:6px;margin-top:10px;border:1px dashed rgba(255,107,107,0.3);
+}
 .alert{
-  margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:16px;display:flex;justify-content:space-between;align-items:center;
   background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.35);
   border-radius:10px;padding:10px 14px;font-size:12px;color:#ffb3b3;
 }
-.alert a{color:#ffd3d3;text-decoration:none;font-weight:600;white-space:nowrap}
-.alert a:hover{text-decoration:underline}
-
-.foot{
-  margin-top:34px;font-family:'Fraunces',serif;font-style:italic;
-  color:var(--teal);font-size:15px;
-}
-.foot b{font-style:normal}
-.src-note{margin-top:8px;font-size:12px;color:#ffb3b3;background:rgba(255,107,107,.15);padding:12px;border:1px solid rgba(255,107,107,.3);border-radius:8px;display:none;}
-.skel{color:var(--ink-faint)}
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <header class="top">
     <div class="brand">
       <div class="mark">dL</div>
-      <div>
-        <div class="name">Decision Lab</div>
-        <div class="sub">Control Room</div>
-      </div>
+      <div><div class="name">Decision Lab</div><div class="sub">Control Room</div></div>
     </div>
     <div class="top-right">
-      <div class="pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt">Establishing stream...</span></div>
-      <button class="refresh" id="refreshBtn" type="button">Refresh</button>
+      <button class="refresh" id="refreshBtn" type="button">Refresh Dashboard</button>
     </div>
   </header>
 
   <section class="hero">
-    <div class="greet" id="dateLine">—</div>
-    <div class="eyebrow">Q1 · Management Reporting</div>
-    <h1 class="serif">The operational<br>health dashboard</h1>
-    <p>Page 1 — know the business health at a glance &amp; take actions immediately.</p>
-    <div class="src-note" id="srcNote"></div>
+    <div id="dateLine" style="font-family:'JetBrains Mono';font-size:10px;color:var(--ink-faint);margin-bottom:8px;">—</div>
+    <h1 class="serif" style="font-size:40px;line-height:1.1;">The operational health dashboard</h1>
   </section>
 
   <main class="grid">
-    <!-- 01 GROWTH -->
-    <section class="card">
+    <!-- CARD 1: REVENUE -->
+    <section class="card" id="card-revenue">
       <div class="card-head"><span class="card-title">Revenue vs Plan</span><span class="card-idx">01 · Growth</span></div>
       <div class="big" id="revBig">—</div>
       <div class="delta" id="revDelta"></div>
@@ -198,8 +134,8 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
       <div class="card-q">Are we growing?</div>
     </section>
 
-    <!-- 02 ROI: margin -->
-    <section class="card">
+    <!-- CARD 2: MARGIN -->
+    <section class="card" id="card-margin">
       <div class="card-head"><span class="card-title">Gross Margin</span><span class="card-idx">02 · ROI</span></div>
       <div class="big" id="gmBig">—</div>
       <div class="delta" id="gmDelta"></div>
@@ -207,14 +143,14 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
       <div class="substats">
         <div class="sub"><div class="lbl">Target</div><div class="val" id="gmTarget">—</div></div>
         <div class="sub"><div class="lbl">YTD Avg</div><div class="val" id="gmYtd">—</div></div>
-        <div class="sub"><div class="lbl">Best</div><div class="val" id="gmBest">—</div><div class="note" id="gmBestNote"></div></div>
+        <div class="sub"><div class="lbl">Best</div><div class="val" id="gmBest">—</div><div class="note" id="gmBestNote" style="font-size:10px;color:var(--ink-faint)"></div></div>
       </div>
       <div class="chart-box"><canvas id="gmChart"></canvas></div>
       <div class="card-q">Are we earning?</div>
     </section>
 
-    <!-- 03 ROI: project CM -->
-    <section class="card">
+    <!-- CARD 3: PROJECTS -->
+    <section class="card" id="card-projects">
       <div class="card-head"><span class="card-title">Project Contribution Margin ROI</span><span class="card-idx">03 · ROI</span></div>
       <div class="chips" id="prjChips">
         <button class="chip active" data-f="all">All</button>
@@ -225,8 +161,8 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
       <div class="card-q" style="margin-top:auto">Are we allocating resourcing efficiently?</div>
     </section>
 
-    <!-- 04 CASHFLOW -->
-    <section class="card">
+    <!-- CARD 4: CASHFLOW -->
+    <section class="card" id="card-cashflow">
       <div class="card-head"><span class="card-title">Cashflow: DSO &amp; Net Payment Gap</span><span class="card-idx">04 · Cashflow</span></div>
       <div class="big" id="cfBig">—</div>
       <div class="delta" id="cfDelta"></div>
@@ -236,10 +172,7 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
         <div class="sub"><div class="lbl">Overdue</div><div class="val red" id="cfOverdue">—</div></div>
         <div class="sub"><div class="lbl">Net Gap</div><div class="val" id="cfGap">—</div></div>
       </div>
-      <div class="alert" id="cfAlert" hidden>
-        <span id="cfAlertTxt">⚠ invoices > 60 days.</span>
-        <a href="#" onclick="return false">Take action →</a>
-      </div>
+      <div class="alert" id="cfAlert" hidden><span id="cfAlertTxt">⚠ invoices > 60 days.</span></div>
       <div class="card-q">Are we collecting?</div>
     </section>
   </main>
@@ -247,30 +180,22 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
 
 <script>
 const $ = id => document.getElementById(id);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
-// Deep extraction function designed to normalize all localized numbers and percentages safely
-function cleanNum(val) {
+function cleanNum(val, isMargin = false) {
   if (val === undefined || val === null || val === "") return 0;
   if (typeof val === "number") return val;
-  
   let str = String(val).trim();
   let isPercent = str.includes("%");
-  
-  str = str.replace(/[^\d.,\-]/g, ""); // Strip alpha currencies
+  str = str.replace(/[^\d.,\-]/g, "");
   if (str === "") return 0;
   
-  // Localized parsing matrix for European/Vietnamese setups (1.840.000 vs 0,35)
   if (str.includes(".") && str.includes(",")) {
-    if (str.indexOf(".") < str.indexOf(",")) {
-      str = str.replace(/\./g, "").replace(",", ".");
-    } else {
-      str = str.replace(/,/g, "");
-    }
+    if (str.indexOf(".") < str.indexOf(",")) str = str.replace(/\./g, "").replace(",", ".");
+    else str = str.replace(/,/g, "");
   } else if (str.includes(".")) {
-    if ((str.match(/\./g) || []).length > 1) {
-      str = str.replace(/\./g, ""); // e.g. 1.840.000 -> 1840000
-    } else if (str.length - str.indexOf(".") === 4 && str.indexOf(".") !== 0) {
-      str = str.replace(/\./g, ""); // standard mill/thousands dot tracking
+    if ((str.match(/\./g) || []).length > 1 || (str.length - str.indexOf(".") === 4 && str.indexOf(".") !== 0)) {
+      str = str.replace(/\./g, "");
     }
   } else if (str.includes(",")) {
     str = str.replace(/,/g, ".");
@@ -279,227 +204,191 @@ function cleanNum(val) {
   let num = parseFloat(str);
   if (isNaN(num)) return 0;
   if (isPercent) return num / 100;
-  
-  // Dynamic scale reduction for raw sheet percentage entries formatted without explicit sign (e.g., 35 instead of 0.35)
-  if (num > 1.5 && num <= 100 && String(val).toLowerCase().includes("margin")) {
-     num = num / 100;
-  }
+  if (isMargin && num > 1) num = num / 100;
   return num;
 }
 
 const fmtM = v => {
   const parsed = cleanNum(v);
-  return parsed >= 1e6 ? "S$" + (parsed / 1e6).toFixed(2) + "M"
-       : parsed >= 1e3 ? "S$" + Math.round(parsed / 1e3) + "K" 
-       : "S$" + parsed;
+  return parsed >= 1e6 ? "S$" + (parsed / 1e6).toFixed(2) + "M" : parsed >= 1e3 ? "S$" + Math.round(parsed / 1e3) + "K" : "S$" + parsed;
 };
 
 const pct = (v, d = 0) => (cleanNum(v) * 100).toFixed(d) + "%";
 
-const monLbl = m => { 
+const monLbl = m => {
   if(!m) return "—";
   let str = String(m).trim();
   if(!str.includes("-")) return str;
   const parts = str.split("-");
   const mm = parseInt(parts[1], 10);
-  const y = parts[0];
   if(isNaN(mm) || mm < 1 || mm > 12) return str;
-  return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mm-1] + " '" + y.slice(2); 
+  return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][mm-1] + " '" + parts[0].slice(2);
 };
 
-// Case-insensitive flexible key mapping utility to prevent header mismatches between Sheets and JS engine
 function findField(row, targets) {
   if (!row) return null;
   for (let key in row) {
     let cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
     for (let t of targets) {
-      if (cleanKey === t.toLowerCase().replace(/[^a-z0-9]/g, "") || cleanKey.includes(t.toLowerCase())) {
-        return row[key];
-      }
+      if (cleanKey === t.toLowerCase().replace(/[^a-z0-9]/g, "") || cleanKey.includes(t.toLowerCase())) return row[key];
     }
   }
   return null;
 }
 
-const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-let charts = {};
-
-function killCharts(){ Object.values(charts).forEach(c=>c.destroy()); charts={}; }
-
-function baseOpts(extra={}){
-  return Object.assign({
-    responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{
-      backgroundColor:"#0c1513", borderColor:css("--line"), borderWidth:1,
-      titleColor:css("--ink"), bodyColor:css("--ink-dim"), padding:10, displayColors:false
-    }},
-    scales:{x:{display:false},y:{display:false}},
-    elements:{point:{radius:0,hoverRadius:4}}
-  }, extra);
-}
-
-async function fetchTab(tab){
-  const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+async function fetchTabRaw(tabName) {
+  const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
   const res = await fetch(url);
-  if(!res.ok) throw new Error(`Could not access Google Sheet tab: "${tab}". Verify tab name is all lowercase.`);
+  if (!res.ok) throw new Error(`Tab text response error.`);
   const text = await res.text();
-  if (text.includes("<!DOCTYPE html>") || text.includes("SignIn")) {
-    throw new Error(`Google Sheet authorization blocked. Make sure Share setting is "Anyone with link - Viewer".`);
-  }
+  if (text.includes("<!DOCTYPE html>") || text.includes("SignIn")) throw new Error(`Sheet access restricted. Check sharing options.`);
   const parsed = Papa.parse(text, {header:true, skipEmptyLines:true});
-  if (!parsed.data || parsed.data.length === 0) throw new Error(`The tab "${tab}" contains no readable data rows.`);
+  if (!parsed.data || parsed.data.length === 0) throw new Error(`Tab has no rows.`);
   return parsed.data;
 }
 
-async function loadData(){
-  try{
-    const [revenue,margin,projects,cashflow] = await Promise.all(CONFIG.TABS.map(fetchTab));
-    return {data:{revenue,margin,projects,cashflow}, live:true};
-  }catch(e){
-    console.error(e);
-    return {data:null, live:false, error:e.message};
-  }
+function showCardError(cardId, message) {
+  const container = $(cardId);
+  const errDiv = document.createElement("div");
+  errDiv.className = "error-msg";
+  errDiv.textContent = `⚠️ Configuration Alert: Check if the tab name or headers match in Google Sheets. Details: ${message}`;
+  container.appendChild(errDiv);
 }
 
-let PRJ = [];
-
-function render(data, live, error){
-  killCharts();
-  if(error || !data) {
-    $("dataPillTxt").textContent = "Data Error";
-    $("srcNote").style.display = "block";
-    $("srcNote").textContent = `⚠️ Error fetching metrics: ${error || "Empty data payload returned."}`;
-    return;
-  }
-  
-  $("dataPill").classList.add("live");
-  $("dataPillTxt").textContent = "Live · Connected";
-  $("srcNote").style.display = "none";
-
-  const teal=css("--teal"), green=css("--green"), red=css("--red"), dim=css("--ink-faint"), line=css("--line");
-  const rev=data.revenue, mar=data.margin, cf=data.cashflow;
-  
-  const rL = rev[rev.length-1] || {};
-  const mL = mar[mar.length-1] || {};
-  const mP = mar[mar.length-2] || {};
-  const cL = cf[cf.length-1] || {};
-
-  $("dateLine").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).toUpperCase();
-
-  /* ==================== 01 REVENUE MATRIX ==================== */
-  const booked = cleanNum(findField(rL, ["booked_usd", "booked_sgd", "booked", "real"]));
-  const plan = cleanNum(findField(rL, ["plan_usd", "plan_sgd", "plan", "target"]));
-  const pipeline = cleanNum(findField(rL, ["pipeline_usd", "pipeline_sgd", "pipeline"]));
-  const attain = plan > 0 ? booked / plan : 0;
-  
-  $("revBig").textContent = plan > 0 ? Math.round(attain * 100) + "%" : "—";
-  const gap = attain - 1;
-  $("revDelta").innerHTML = plan > 0 
-    ? (gap >= 0 ? `<span class="up">↗ <b>${pct(Math.abs(gap))} ahead of plan</b></span>` : `<span class="bad">↘ <b>${pct(Math.abs(gap))} behind plan</b></span>`)
-    : "Metric parsing intact";
-  
-  $("revBooked").textContent = fmtM(booked);
-  $("revPlan").textContent = fmtM(plan);
-  $("revPipe").textContent = fmtM(pipeline);
-
-  const labels = rev.map(r => monLbl(findField(r, ["month", "date"])));
-  charts.revSpark = new Chart($("revSpark"),{type:"line",data:{labels,datasets:[{data:rev.map(r=>cleanNum(findField(r, ["booked_usd","booked_sgd","booked"]))),borderColor:green,borderWidth:2,fill:{target:"origin"},backgroundColor:"rgba(143,227,168,.08)",tension:.35}]},options:baseOpts()});
-  charts.revChart = new Chart($("revChart"),{type:"line",data:{labels,datasets:[
-    {label:"Booked",data:rev.map(r=>cleanNum(findField(r, ["booked_usd","booked_sgd","booked"]))),borderColor:teal,borderWidth:2,tension:.35},
-    {label:"Plan",data:rev.map(r=>cleanNum(findField(r, ["plan_usd","plan_sgd","plan"]))),borderColor:dim,borderWidth:1.5,borderDash:[5,4],tension:.35}
-  ]},options:baseOpts({plugins:{legend:{display:true,position:"bottom",labels:{color:dim,boxWidth:8,boxHeight:8,usePointStyle:true,font:{size:10}}}}})});
-
-  /* ==================== 02 MARGIN MATRIX ==================== */
-  const currentMargin = cleanNum(findField(mL, ["gross_margin_pct", "gross_margin", "margin", "actual"]));
-  const targetMargin = cleanNum(findField(mL, ["target_pct", "target", "plan"]));
-  const pastMargin = cleanNum(findField(mP, ["gross_margin_pct", "gross_margin", "margin"]));
-  
-  $("gmBig").textContent = currentMargin > 0 ? pct(currentMargin, 1) : "—";
-  const mom = currentMargin - pastMargin;
-  $("gmDelta").innerHTML = pastMargin > 0 ? `<span class="${mom>=0?"up":"bad"}">${mom>=0?"↗":"↘"} <b>${(mom*100).toFixed(1)}pp MoM</b></span>` : "—";
-  $("gmTarget").textContent = targetMargin > 0 ? pct(targetMargin, 1) : "—";
-  $("gmYtd").textContent = mar.length ? pct(mar.reduce((s,r)=>s+cleanNum(findField(r, ["gross_margin_pct","gross_margin","margin"])),0)/mar.length, 1) : "—";
-  
-  if (mar.length) {
-    const best = mar.reduce((a,b)=>cleanNum(findField(b, ["gross_margin_pct","gross_margin"])) > cleanNum(findField(a, ["gross_margin_pct","gross_margin"])) ? b : a || {});
-    $("gmBest").textContent = pct(findField(best, ["gross_margin_pct","gross_margin"]), 1);
-    $("gmBestNote").textContent = monLbl(findField(best, ["month","date"]));
-  }
-
-  charts.gmSpark = new Chart($("gmSpark"),{type:"line",data:{labels,datasets:[{data:mar.map(r=>cleanNum(findField(r, ["gross_margin_pct","gross_margin"]))),borderColor:teal,borderWidth:2,tension:.35}]},options:baseOpts()});
-  charts.gmChart = new Chart($("gmChart"),{type:"line",data:{labels,datasets:[
-    {label:"Gross margin",data:mar.map(r=>cleanNum(findField(r, ["gross_margin_pct","gross_margin"]))),borderColor:teal,borderWidth:2,tension:.35},
-    {label:"Target",data:mar.map(r=>cleanNum(findField(r, ["target_pct","target"]))),borderColor:dim,borderWidth:1.5,borderDash:[5,4],tension:0}
-  ]},options:baseOpts({plugins:{legend:{display:true,position:"bottom",labels:{color:dim,boxWidth:8,boxHeight:8,usePointStyle:true,font:{size:10}}}}})});
-
-  /* ==================== 03 PROJECTS ENGINE ==================== */
-  PRJ = data.projects || [];
-  drawProjects("all");
-
-  /* ==================== 04 CASHFLOW MATRIX ==================== */
-  const dso = cleanNum(findField(cL, ["dso_days", "dso"]));
-  const targetDso = cleanNum(findField(cL, ["target_dso", "target"]));
-  const collected = cleanNum(findField(cL, ["collected_usd", "collected_sgd", "collected"]));
-  const overdue = cleanNum(findField(cL, ["overdue_usd", "overdue_sgd", "overdue"]));
-  const invoicesOver60 = cleanNum(findField(cL, ["invoices_over_60d", "over_60", "invoices"]));
-  
-  $("cfBig").innerHTML = dso > 0 ? dso + "<small>days</small>" : "—";
-  const dsoGap = dso - targetDso;
-  $("cfDelta").innerHTML = dso > 0 ? `<span class="${dsoGap<=0?"up":"bad"}">${dsoGap<=0?"↘":"↗"} <b>${Math.abs(dsoGap)} days ${dsoGap<=0?"to":"over"} plan</b></span>` : "—";
-  $("cfCollected").textContent = fmtM(collected);
-  $("cfOverdue").textContent = fmtM(overdue);
-  $("cfGap").textContent = dso > 0 ? (dsoGap>0?"+":"") + dsoGap + " days" : "—";
-  
-  $("cfAlert").hidden = invoicesOver60 <= 0;
-  $("cfAlertTxt").textContent = `⚠ ${invoicesOver60} invoice${invoicesOver60>1?"s":""} > 60 days.`;
-
-  charts.cfSpark = new Chart($("cfSpark"),{type:"bar",data:{labels,datasets:[{data:cf.map(r=>cleanNum(findField(r, ["dso_days","dso"]))),backgroundColor:cf.map((r,i)=>i===cf.length-1?teal:line),borderRadius:3}]},options:baseOpts()});
+// 01 REVENUE LOADER
+async function loadRevenue() {
+  try {
+    const data = await fetchTabRaw("revenue");
+    const rL = data[data.length - 1];
+    const booked = cleanNum(findField(rL, ["booked_usd", "booked_sgd", "booked", "real"]));
+    const plan = cleanNum(findField(rL, ["plan_usd", "plan_sgd", "plan", "target"]));
+    const attain = plan > 0 ? booked / plan : 0;
+    
+    $("revBig").textContent = Math.round(attain * 100) + "%";
+    $("revDelta").innerHTML = attain ? (attain >= 1 ? `<span style="color:var(--teal)">↗ <b>${pct(Math.abs(attain-1))} ahead</b></span>` : `<span style="color:var(--red)">↘ <b>${pct(Math.abs(attain-1))} behind</b></span>`) : "—";
+    $("revBooked").textContent = fmtM(booked);
+    $("revPlan").textContent = fmtM(plan);
+    $("revPipe").textContent = fmtM(findField(rL, ["pipeline_usd", "pipeline_sgd", "pipeline"]));
+    
+    const labels = data.map(r => monLbl(findField(r, ["month", "date"])));
+    new Chart($("revSpark"), {type:"line", options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}, data:{labels,datasets:[{data:data.map(r=>cleanNum(findField(r,["booked_usd","booked_sgd","booked"]))),borderColor:css("--green"),borderWidth:2,fill:false}]}});
+    new Chart($("revChart"), {type:"line", options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"bottom"}},scales:{x:{display:false},y:{display:false}}}, data:{labels,datasets:[{label:"Booked",data:data.map(r=>cleanNum(findField(r,["booked_usd","booked_sgd","booked"]))),borderColor:css("--teal")},{label:"Plan",data:data.map(r=>cleanNum(findField(r,["plan_usd","plan_sgd","plan"]))),borderColor:css("--ink-faint"),borderDash:[5,5]}]}});
+  } catch(e) { showCardError("card-revenue", e.message); }
 }
 
-function drawProjects(filter){
-  const teal=css("--teal"), green=css("--green"), red=css("--red"), amber=css("--amber");
+// 02 MARGIN LOADER
+async function loadMargin() {
+  try {
+    const data = await fetchTabRaw("margin");
+    const mL = data[data.length - 1];
+    const mP = data[data.length - 2] || {};
+    const cur = cleanNum(findField(mL, ["gross_margin_pct", "gross_margin", "margin"]), true);
+    const tgt = cleanNum(findField(mL, ["target_pct", "target", "plan"]), true);
+    const past = cleanNum(findField(mP, ["gross_margin_pct", "gross_margin", "margin"]), true);
+    
+    $("gmBig").textContent = pct(cur, 1);
+    $("gmDelta").innerHTML = past ? `<span style="color:${(cur-past)>=0?'var(--teal)':'var(--red)'}"><b>${((cur-past)*100).toFixed(1)}pp MoM</b></span>` : "—";
+    $("gmTarget").textContent = pct(tgt, 1);
+    $("gmYtd").textContent = pct(data.reduce((s,r)=>s+cleanNum(findField(r,["gross_margin_pct","gross_margin","margin"]),true),0)/data.length, 1);
+    
+    const best = data.reduce((a,b)=>cleanNum(findField(b,["gross_margin_pct","gross_margin"]),true)>cleanNum(findField(a,["gross_margin_pct","gross_margin"]),true)?b:a);
+    $("gmBest").textContent = pct(findField(best,["gross_margin_pct","gross_margin"]), 1);
+    $("gmBestNote").textContent = monLbl(findField(best,["month","date"]));
+    
+    const labels = data.map(r => monLbl(findField(r, ["month", "date"])));
+    new Chart($("gmSpark"), {type:"line", options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}, data:{labels,datasets:[{data:data.map(r=>cleanNum(findField(r,["gross_margin_pct","gross_margin"]),true)),borderColor:css("--teal"),borderWidth:2}]}});
+    new Chart($("gmChart"), {type:"line", options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"bottom"}},scales:{x:{display:false},y:{display:false}}}, data:{labels,datasets:[{label:"Margin",data:data.map(r=>cleanNum(findField(r,["gross_margin_pct","gross_margin"]),true)),borderColor:css("--teal")},{label:"Target",data:data.map(r=>cleanNum(findField(r,["target_pct","target"]),true)),borderColor:css("--ink-faint"),borderDash:[5,5]}]}});
+  } catch(e) { showCardError("card-margin", e.message); }
+}
+
+// 03 PROJECTS LOADER
+let globalProjects = [];
+async function loadProjects() {
+  try {
+    const data = await fetchTabRaw("projects");
+    globalProjects = data;
+    renderProjectsView("all");
+  } catch(e) { showCardError("card-projects", e.message); }
+}
+
+function renderProjectsView(filter) {
+  const listContainer = $("prjList");
+  if (!listContainer) return;
+  
+  const green=css("--green"), red=css("--red"), amber=css("--amber"), teal=css("--teal");
   const colorOf = s => {
     let clean = String(s).toLowerCase();
-    if (clean.includes("health") || clean.includes("track") || clean.includes("good")) return green;
+    if (clean.includes("health") || clean.includes("track")) return green;
     if (clean.includes("watch") || clean.includes("warn")) return amber;
     return red;
   };
   
-  const list = PRJ.filter(p=>{
+  const filtered = globalProjects.filter(p => {
     const stat = String(findField(p, ["status"])).toLowerCase();
-    if(filter==="all") return true;
-    if(filter==="healthy") return stat.includes("health") || stat.includes("track");
-    return stat.includes("action") || stat.includes("require") || stat.includes("bad");
-  }).sort((a,b)=>cleanNum(findField(b, ["cm_roi_pct","cm_roi","roi"])) - cleanNum(findField(a, ["cm_roi_pct","cm_roi","roi"])));
-  
-  $("prjList").innerHTML = list.map(p=>{
-    const title = findField(p, ["project", "name"]) || "Unnamed project";
-    const client = findField(p, ["client", "customer"]) || "Internal";
+    if (filter === "all") return true;
+    if (filter === "healthy") return stat.includes("health") || stat.includes("track");
+    return stat.includes("action") || stat.includes("require") || stat.includes("watch");
+  }).sort((a,b)=>cleanNum(findField(b,["cm_roi_pct","cm_roi","roi"]))-cleanNum(findField(a,["cm_roi_pct","cm_roi","roi"])));
+
+  listContainer.innerHTML = filtered.map(p => {
+    const title = findField(p, ["project", "name"]) || "Project";
     const roi = cleanNum(findField(p, ["cm_roi_pct", "cm_roi", "roi"]));
-    const rawStatus = findField(p, ["status"]) || "Active";
-    
+    const stat = findField(p, ["status"]) || "Active";
     return `
-      <div class="prj ${rawStatus.toString().toLowerCase().includes("action")?"action":""}">
-        <div class="nm" title="${title} — ${client}">${title}</div>
-        <div class="bar"><i style="width:${Math.min(100,roi*100)}%;background:${colorOf(rawStatus)}"></i></div>
-        <div class="tag" style="color:${colorOf(rawStatus)}">${pct(roi)}<span>${rawStatus}</span></div>
+      <div class="prj">
+        <div class="nm">${title}</div>
+        <div class="bar"><i style="width:${Math.min(100,roi*100)}%;background:${colorOf(stat)}"></i></div>
+        <div class="tag" style="color:${colorOf(stat)}">${pct(roi)}<span>${stat}</span></div>
       </div>`;
-  }).join("") || `<div style="color:var(--ink-faint);padding:20px 0">No projects matching view filter parameters.</div>`;
+  }).join("") || `<div style="color:var(--ink-faint);padding:20px 0">No items available in this view.</div>`;
 }
 
-document.getElementById("prjChips").addEventListener("click", e=>{
-  const b=e.target.closest(".chip"); if(!b) return;
-  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+// 04 CASHFLOW LOADER
+async function loadCashflow() {
+  try {
+    const data = await fetchTabRaw("cashflow");
+    const cL = data[data.length - 1];
+    const dso = cleanNum(findField(cL, ["dso_days", "dso"]));
+    const targetDso = cleanNum(findField(cL, ["target_dso", "target"]));
+    
+    $("cfBig").innerHTML = dso ? dso + "<small>days</small>" : "—";
+    $("cfDelta").innerHTML = dso ? `<span style="color:${(dso-targetDso)<=0?'var(--teal)':'var(--red)'}"><b>${Math.abs(dso-targetDso)} days ${dso<=targetDso?'under':'over'} plan</b></span>` : "—";
+    $("cfCollected").textContent = fmtM(findField(cL, ["collected_usd", "collected_sgd", "collected"]));
+    $("cfOverdue").textContent = fmtM(findField(cL, ["overdue_usd", "overdue_sgd", "overdue"]));
+    $("cfGap").textContent = dso ? (dso - targetDso) + " days" : "—";
+    
+    const inv = cleanNum(findField(cL, ["invoices_over_60d", "over_60", "invoices"]));
+    if(inv > 0) {
+      $("cfAlert").hidden = false;
+      $("cfAlertTxt").textContent = `⚠ ${inv} invoice${inv>1?'s':''} > 60 days overdue.`;
+    }
+    
+    const labels = data.map(r => monLbl(findField(r, ["month", "date"])));
+    new Chart($("cfSpark"), {type:"bar", options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:false},y:{display:false}},plugins:{legend:{display:false}}}, data:{labels,datasets:[{data:data.map(r=>cleanNum(findField(r,["dso_days","dso"]))),backgroundColor:css("--line")}]}});
+  } catch(e) { showCardError("card-cashflow", e.message); }
+}
+
+// INTERFACES
+document.getElementById("prjChips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
   b.classList.add("active");
-  drawProjects(b.dataset.f);
+  renderProjectsView(b.dataset.f);
 });
 
-async function boot(){
-  const {data,live,error} = await loadData();
-  render(data,live,error);
+function init() {
+  $("dateLine").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).toUpperCase();
+  // Clear any existing debug divs before running loaders
+  document.querySelectorAll(".error-msg").forEach(el => el.remove());
+  
+  loadRevenue();
+  loadMargin();
+  loadProjects();
+  loadCashflow();
 }
-document.getElementById("refreshBtn").addEventListener("click", boot);
-boot();
+
+document.getElementById("refreshBtn").addEventListener("click", init);
+init();
 </script>
 </body>
 </html>
