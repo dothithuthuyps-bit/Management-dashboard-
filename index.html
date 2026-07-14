@@ -5,17 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Decision Lab · Control Room</title>
 
-<!-- ============================================================
-  CONNECT TO LIVE DATA (Google Sheets) — 3 steps
-  1. Import decision_lab_dashboard_data.xlsx into Google Sheets
-     (File > Import > Replace spreadsheet — keeps all 4 tabs).
-  2. Share > "Anyone with the link" > Viewer.
-  3. Paste the Sheet ID below (the long string between /d/ and /edit
-     in the sheet URL). Leave "" to run on embedded sample data.
-============================================================ -->
 <script>
 const CONFIG = {
-  SHEET_ID: "1o66sHJtGzc8Xwo__4byO5iExH1VLNZg7",           // <-- paste your Google Sheet ID here
+  SHEET_ID: "1o66sHJtGzc8Xwo__4byO5iExH1VLNZg7", // Hardcoded with your Google Sheet ID
   TABS: ["revenue", "margin", "projects", "cashflow"],
   CURRENCY: "USD"
 };
@@ -52,7 +44,6 @@ body{
 .serif{font-family:'Fraunces',Georgia,serif}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
 
-/* ---------- shell ---------- */
 .wrap{max-width:1280px;margin:0 auto;padding:0 28px 72px}
 header.top{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -82,7 +73,6 @@ button.refresh{
 }
 button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
 
-/* ---------- hero ---------- */
 .hero{padding:46px 0 34px}
 .eyebrow{
   font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;
@@ -95,7 +85,6 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
 .hero p{color:var(--ink-dim);font-style:italic;margin-top:14px;font-size:13.5px}
 .hero .greet{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:8px}
 
-/* ---------- grid & cards ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 @media(max-width:920px){.grid{grid-template-columns:1fr}}
 .card{
@@ -135,7 +124,6 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
 .card{position:relative}
 @media(max-width:560px){.head-chart{display:none}.substats{grid-template-columns:1fr 1fr}}
 
-/* ---------- projects ---------- */
 .chips{display:flex;gap:8px;margin-bottom:16px}
 .chip{
   font-size:11px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);
@@ -152,7 +140,6 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
 .prj .tag{width:118px;text-align:right;font-size:11.5px;font-weight:600;flex-shrink:0}
 .prj .tag span{display:block;font-weight:400;color:var(--ink-faint);font-size:10px}
 
-/* ---------- alert ---------- */
 .alert{
   margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;
   background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.35);
@@ -161,13 +148,12 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
 .alert a{color:#ffd3d3;text-decoration:none;font-weight:600;white-space:nowrap}
 .alert a:hover{text-decoration:underline}
 
-/* ---------- footer ---------- */
 .foot{
   margin-top:34px;font-family:'Fraunces',serif;font-style:italic;
   color:var(--teal);font-size:15px;
 }
 .foot b{font-style:normal}
-.src-note{margin-top:8px;font-size:11px;color:var(--ink-faint)}
+.src-note{margin-top:8px;font-size:11px;color:var(--ink-dim);background: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px; display:none;}
 .skel{color:var(--ink-faint)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -184,7 +170,7 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
       </div>
     </div>
     <div class="top-right">
-      <div class="pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt">Sample data</span></div>
+      <div class="pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt">Loading data...</span></div>
       <button class="refresh" id="refreshBtn" type="button">Refresh</button>
     </div>
   </header>
@@ -194,6 +180,7 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
     <div class="eyebrow">Q1 · Management Reporting</div>
     <h1 class="serif">The operational<br>health dashboard</h1>
     <p>Page 1 — know the business health at a glance &amp; take actions immediately.</p>
+    <div class="src-note" id="srcNote"></div>
   </section>
 
   <main class="grid">
@@ -261,11 +248,9 @@ button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color
   </main>
 
   <div class="foot">The dashboard is built on 3 main indices: <b>Growth, ROI, Cashflow.</b></div>
-  <div class="src-note" id="srcNote">Running on embedded sample data. Paste your Google Sheet ID into CONFIG at the top of this file to go live.</div>
 </div>
 
 <script>
-/* ---------------- sample data (mirrors decision_lab_dashboard_data.xlsx) ---------------- */
 const SAMPLE = {
   revenue: [
     {month:"2026-01", booked_usd:1120000, plan_usd:1200000, pipeline_usd:2100000},
@@ -300,12 +285,21 @@ const SAMPLE = {
   ]
 };
 
-/* ---------------- helpers ---------------- */
 const $ = id => document.getElementById(id);
-const fmtM = v => v>=1e6 ? "$"+(v/1e6).toFixed(2).replace(/\.?0+$/,"")+"M"
-              : v>=1e3 ? "$"+Math.round(v/1e3)+"K" : "$"+v;
-const pct = (v,d=0) => (v*100).toFixed(d)+"%";
-const monLbl = m => { const [y,mm]=m.split("-"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mm-1]+" '"+y.slice(2); };
+const fmtM = v => {
+  if (v === undefined || v === null || isNaN(v)) return "—";
+  return v>=1e6 ? "$"+(v/1e6).toFixed(2).replace(/\.?0+$/,"")+"M"
+       : v>=1e3 ? "$"+Math.round(v/1e3)+"K" : "$"+v;
+};
+const pct = (v,d=0) => {
+  if (v === undefined || v === null || isNaN(v)) return "—";
+  return (v*100).toFixed(d)+"%";
+};
+const monLbl = m => { 
+  if(!m || typeof m !== 'string' || !m.includes("-")) return "—";
+  const [y,mm]=m.split("-"); 
+  return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mm-1]+" '"+y.slice(2); 
+};
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 let charts = {};
@@ -323,13 +317,16 @@ function baseOpts(extra={}){
   }, extra);
 }
 
-/* ---------------- data loading ---------------- */
 async function fetchTab(tab){
   const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${tab}`;
   const res = await fetch(url);
-  if(!res.ok) throw new Error(tab+" HTTP "+res.status);
+  if(!res.ok) throw new Error(`Tab "${tab}" returned HTTP status ${res.status}. Check if the tab name exists exactly.`);
   const text = await res.text();
+  if (text.includes("<!DOCTYPE html>") || text.includes("SignIn")) {
+    throw new Error(`Google Sheet is private. Click "Share" and change Access to "Anyone with the link".`);
+  }
   const parsed = Papa.parse(text, {header:true, dynamicTyping:true, skipEmptyLines:true});
+  if(!parsed.data || parsed.data.length === 0) throw new Error(`Tab "${tab}" is empty.`);
   return parsed.data.map(r=>{
     const o={};
     for(const k in r){
@@ -350,17 +347,15 @@ async function loadData(){
   if(!CONFIG.SHEET_ID){ return {data:SAMPLE, live:false}; }
   try{
     const [revenue,margin,projects,cashflow] = await Promise.all(CONFIG.TABS.map(fetchTab));
-    // normalize percentage columns possibly stored as 35 instead of 0.35
     margin.forEach(r=>{ if(r.gross_margin_pct>1.5) r.gross_margin_pct/=100; if(r.target_pct>1.5) r.target_pct/=100; });
     projects.forEach(r=>{ if(r.cm_roi_pct>10) r.cm_roi_pct/=100; });
     return {data:{revenue,margin,projects,cashflow}, live:true};
   }catch(e){
-    console.error("Sheet fetch failed, falling back to sample:", e);
+    console.error("Sheet fetch failed:", e);
     return {data:SAMPLE, live:false, error:e.message};
   }
 }
 
-/* ---------------- render ---------------- */
 let PRJ = [];
 
 function render(data, live, error){
@@ -368,26 +363,30 @@ function render(data, live, error){
   const teal=css("--teal"), green=css("--green"), red=css("--red"), amber=css("--amber"),
         dim=css("--ink-faint"), line=css("--line");
 
-  // status
   const pill=$("dataPill");
-  pill.classList.toggle("live", live);
-  $("dataPillTxt").textContent = live ? "Live · Google Sheets" : "Sample data";
-  $("srcNote").textContent = live
-    ? "Connected to Google Sheets. Edit the sheet, then hit Refresh."
-    : (error ? "Sheet fetch failed ("+error+") — showing sample data. Check sharing is set to 'Anyone with the link'."
-             : "Running on embedded sample data. Paste your Google Sheet ID into CONFIG at the top of this file to go live.");
+  const srcNote=$("srcNote");
+  
+  if (error) {
+    pill.classList.remove("live");
+    $("dataPillTxt").textContent = "Error Loading Live Data";
+    srcNote.style.display = "block";
+    srcNote.textContent = `⚠️ Connection Failed: ${error} — Displaying default sample data instead.`;
+  } else {
+    pill.classList.toggle("live", live);
+    $("dataPillTxt").textContent = live ? "Live · Google Sheets" : "Sample data";
+    srcNote.style.display = "none";
+  }
 
   const rev=data.revenue, mar=data.margin, cf=data.cashflow;
-  const rL=rev[rev.length-1], mL=mar[mar.length-1], mP=mar[mar.length-2], cL=cf[cf.length-1];
+  const rL=rev[rev.length-1] || {}, mL=mar[mar.length-1] || {}, mP=mar[mar.length-2] || {}, cL=cf[cf.length-1] || {};
 
-  // date line
   $("dateLine").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).toUpperCase();
 
   /* 01 revenue */
-  const attain = rL.booked_usd/rL.plan_usd;
-  $("revBig").textContent = Math.round(attain*100)+"%";
-  const gap = attain-1;
-  $("revDelta").innerHTML = (gap>=0?`<span class="up">↗ <b>${pct(Math.abs(gap))} ahead of plan</b></span>`:`<span class="bad">↘ <b>${pct(Math.abs(gap))} behind plan</b></span>`)+` &nbsp;<span style="color:var(--ink-faint)">${monLbl(rL.month)}</span>`;
+  const attain = (rL.booked_usd && rL.plan_usd) ? rL.booked_usd/rL.plan_usd : 0;
+  $("revBig").textContent = attain ? Math.round(attain*100)+"%" : "—";
+  const gap = attain - 1;
+  $("revDelta").innerHTML = attain ? (gap>=0?`<span class="up">↗ <b>${pct(Math.abs(gap))} ahead of plan</b></span>`:`<span class="bad">↘ <b>${pct(Math.abs(gap))} behind plan</b></span>`)+` &nbsp;<span style="color:var(--ink-faint)">${monLbl(rL.month)}</span>` : "No data available";
   $("revBooked").textContent = fmtM(rL.booked_usd);
   $("revPlan").textContent = fmtM(rL.plan_usd);
   $("revPipe").textContent = fmtM(rL.pipeline_usd);
@@ -401,13 +400,17 @@ function render(data, live, error){
 
   /* 02 margin */
   $("gmBig").textContent = pct(mL.gross_margin_pct);
-  const mom = mL.gross_margin_pct - (mP?mP.gross_margin_pct:mL.gross_margin_pct);
-  $("gmDelta").innerHTML = `<span class="${mom>=0?"up":"bad"}">${mom>=0?"↗":"↘"} <b>${(mom*100).toFixed(0)}pp MoM</b></span> &nbsp;<span style="color:var(--ink-faint)">vs ${mP?monLbl(mP.month):"—"} ${mP?pct(mP.gross_margin_pct):""}</span>`;
+  const mom = (mL.gross_margin_pct !== undefined && mP.gross_margin_pct !== undefined) ? mL.gross_margin_pct - mP.gross_margin_pct : 0;
+  $("gmDelta").innerHTML = mP.gross_margin_pct ? `<span class="${mom>=0?"up":"bad"}">${mom>=0?"↗":"↘"} <b>${(mom*100).toFixed(0)}pp MoM</b></span> &nbsp;<span style="color:var(--ink-faint)">vs ${monLbl(mP.month)} ${pct(mP.gross_margin_pct)}</span>` : "—";
   $("gmTarget").textContent = pct(mL.target_pct);
-  $("gmYtd").textContent = pct(mar.reduce((s,r)=>s+r.gross_margin_pct,0)/mar.length);
-  const best = mar.reduce((a,b)=>b.gross_margin_pct>a.gross_margin_pct?b:a);
-  $("gmBest").textContent = pct(best.gross_margin_pct);
-  $("gmBestNote").textContent = monLbl(best.month);
+  $("gmYtd").textContent = mar.length ? pct(mar.reduce((s,r)=>s+(r.gross_margin_pct||0),0)/mar.length) : "—";
+  
+  if (mar.length) {
+    const best = mar.reduce((a,b)=>(b.gross_margin_pct||0)>(a.gross_margin_pct||0)?b:a);
+    $("gmBest").textContent = pct(best.gross_margin_pct);
+    $("gmBestNote").textContent = monLbl(best.month);
+  }
+  
   charts.gmSpark = new Chart($("gmSpark"),{type:"line",data:{labels,datasets:[{data:mar.map(r=>r.gross_margin_pct),borderColor:teal,borderWidth:2,tension:.35}]},options:baseOpts()});
   charts.gmChart = new Chart($("gmChart"),{type:"line",data:{labels,datasets:[
     {label:"Gross margin",data:mar.map(r=>r.gross_margin_pct),borderColor:teal,borderWidth:2,tension:.35},
@@ -415,35 +418,37 @@ function render(data, live, error){
   ]},options:baseOpts({plugins:{legend:{display:true,position:"bottom",labels:{color:dim,boxWidth:8,boxHeight:8,usePointStyle:true,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+pct(c.parsed.y,1)},backgroundColor:"#0c1513",borderColor:line,borderWidth:1,titleColor:"#eef4f2",bodyColor:"#8fa39e",padding:10}}})});
 
   /* 03 projects */
-  PRJ = data.projects;
+  PRJ = data.projects || [];
   drawProjects("all");
 
   /* 04 cashflow */
-  $("cfBig").innerHTML = cL.dso_days+"<small>days</small>";
-  const dsoGap = cL.dso_days - cL.target_dso;
-  $("cfDelta").innerHTML = `<span class="${dsoGap<=0?"up":"bad"}">${dsoGap<=0?"↘":"↗"} <b>${Math.abs(dsoGap)} days ${dsoGap<=0?"to":"over"} plan</b></span> &nbsp;<span style="color:var(--ink-faint)">target ${cL.target_dso}d</span>`;
+  $("cfBig").innerHTML = cL.dso_days !== undefined ? cL.dso_days+"<small>days</small>" : "—";
+  const dsoGap = (cL.dso_days !== undefined && cL.target_dso !== undefined) ? cL.dso_days - cL.target_dso : 0;
+  $("cfDelta").innerHTML = cL.dso_days ? `<span class="${dsoGap<=0?"up":"bad"}">${dsoGap<=0?"↘":"↗"} <b>${Math.abs(dsoGap)} days ${dsoGap<=0?"to":"over"} plan</b></span> &nbsp;<span style="color:var(--ink-faint)">target ${cL.target_dso}d</span>` : "—";
   $("cfCollected").textContent = fmtM(cL.collected_usd);
   $("cfOverdue").textContent = fmtM(cL.overdue_usd);
-  $("cfGap").textContent = (dsoGap>0?"+":"")+dsoGap+" days";
+  $("cfGap").textContent = cL.dso_days ? (dsoGap>0?"+":"")+dsoGap+" days" : "—";
   const inv = cL.invoices_over_60d||0;
   $("cfAlert").hidden = inv<=0;
   $("cfAlertTxt").textContent = `⚠ ${inv} invoice${inv>1?"s":""} > 60 days.`;
+  
   charts.cfSpark = new Chart($("cfSpark"),{type:"bar",data:{labels,datasets:[{data:cf.map(r=>r.dso_days),backgroundColor:cf.map((r,i)=>i===cf.length-1?teal:line),borderRadius:3}]},options:baseOpts({plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" days DSO"},backgroundColor:"#0c1513",borderColor:line,borderWidth:1,titleColor:"#eef4f2",bodyColor:"#8fa39e",padding:10}}})});
 }
 
 function drawProjects(filter){
   const teal=css("--teal"), green=css("--green"), red=css("--red"), amber=css("--amber");
-  const colorOf = s => s==="Healthy"?green : s==="Watch"?amber : s==="Action required"?red : teal;
+  const colorOf = s => s==="Healthy" || s==="On track"?green : s==="Watch"?amber : s==="Action required"?red : teal;
   const list = PRJ.filter(p=>{
     if(filter==="all") return true;
     if(filter==="healthy") return ["Healthy","On track"].includes(p.status);
     return p.status==="Action required";
-  }).sort((a,b)=>b.cm_roi_pct-a.cm_roi_pct);
+  }).sort((a,b)=>(b.cm_roi_pct||0)-(a.cm_roi_pct||0));
+  
   $("prjList").innerHTML = list.map(p=>`
     <div class="prj ${p.status==="Action required"?"action":""}">
-      <div class="nm" title="${p.project} — ${p.client}">${p.project}</div>
-      <div class="bar"><i style="width:${Math.min(100,p.cm_roi_pct*80)}%;background:${colorOf(p.status)}"></i></div>
-      <div class="tag" style="color:${colorOf(p.status)}">${Math.round(p.cm_roi_pct*100)}%<span>${p.status}</span></div>
+      <div class="nm" title="${p.project || 'Unknown'} — ${p.client || 'Unknown'}">${p.project || 'Unnamed Project'}</div>
+      <div class="bar"><i style="width:${Math.min(100,(p.cm_roi_pct||0)*80)}%;background:${colorOf(p.status)}"></i></div>
+      <div class="tag" style="color:${colorOf(p.status)}">${pct(p.cm_roi_pct)}<span>${p.status || 'No Status'}</span></div>
     </div>`).join("") || `<div style="color:var(--ink-faint);padding:20px 0">No projects in this view.</div>`;
 }
 
