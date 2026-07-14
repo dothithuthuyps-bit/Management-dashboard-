@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Lab · Control Room</title>
+
+<!-- ============================================================
+  CONNECT TO LIVE DATA (Google Sheets) — 3 steps
+  1. Import decision_lab_dashboard_data.xlsx into Google Sheets
+     (File > Import > Replace spreadsheet — keeps all 4 tabs).
+  2. Share > "Anyone with the link" > Viewer.
+  3. Paste the Sheet ID below (the long string between /d/ and /edit
+     in the sheet URL). Leave "" to run on embedded sample data.
+============================================================ -->
+<script>
+const CONFIG = {
+  SHEET_ID: "",           // <-- paste your Google Sheet ID here
+  TABS: ["revenue", "margin", "projects", "cashflow"],
+  CURRENCY: "USD"
+};
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#070d0c;
+  --panel:#0c1513;
+  --panel-2:#101b18;
+  --line:#1b2926;
+  --ink:#eef4f2;
+  --ink-dim:#8fa39e;
+  --ink-faint:#5b6f6a;
+  --teal:#2fd6c3;
+  --teal-dim:#1a8f83;
+  --green:#8fe3a8;
+  --red:#ff6b6b;
+  --amber:#ffc86b;
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Fraunces',Georgia,serif}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px 72px}
+header.top{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:22px 0;border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .mark{
+  width:34px;height:34px;border-radius:9px;background:var(--teal);
+  color:#04211d;display:grid;place-items:center;
+  font-family:'Fraunces',serif;font-weight:600;font-size:15px;
+}
+.brand .name{font-weight:600;font-size:14px;letter-spacing:.01em}
+.brand .sub{font-size:10px;letter-spacing:.22em;color:var(--ink-faint);text-transform:uppercase}
+.top-right{display:flex;align-items:center;gap:10px}
+.pill{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;
+  padding:6px 12px;border-radius:999px;border:1px solid var(--line);
+  color:var(--ink-dim);text-transform:uppercase;display:flex;align-items:center;gap:7px;
+}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--amber)}
+.pill.live .dot{background:var(--teal);box-shadow:0 0 8px var(--teal)}
+button.refresh{
+  background:transparent;border:1px solid var(--line);color:var(--ink-dim);
+  padding:6px 14px;border-radius:999px;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+button.refresh:hover,button.refresh:focus-visible{border-color:var(--teal);color:var(--teal);outline:none}
+
+/* ---------- hero ---------- */
+.hero{padding:46px 0 34px}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--teal);margin-bottom:14px;
+}
+.hero h1{
+  font-family:'Fraunces',serif;font-weight:500;font-size:clamp(34px,4.6vw,54px);
+  line-height:1.05;letter-spacing:-.01em;max-width:640px;
+}
+.hero p{color:var(--ink-dim);font-style:italic;margin-top:14px;font-size:13.5px}
+.hero .greet{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:8px}
+
+/* ---------- grid & cards ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:920px){.grid{grid-template-columns:1fr}}
+.card{
+  background:linear-gradient(160deg,var(--panel-2) 0%,var(--panel) 55%);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px 28px 20px;display:flex;flex-direction:column;min-height:380px;
+}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+.card-title{
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--teal);
+}
+.card-idx{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-faint);text-transform:uppercase}
+.big{
+  font-family:'Fraunces',serif;font-weight:500;font-size:clamp(46px,5vw,64px);
+  line-height:1;letter-spacing:-.01em;
+}
+.big small{font-size:.38em;color:var(--ink-dim);font-weight:400;margin-left:6px}
+.delta{margin-top:10px;font-size:12.5px;color:var(--ink-dim)}
+.delta b{font-weight:600}
+.delta .up{color:var(--teal)} .delta .down{color:var(--teal)} .delta .bad{color:var(--red)}
+.substats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.sub{
+  background:rgba(255,255,255,.02);border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;
+}
+.sub .lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+.sub .val{font-weight:600;font-size:15px;margin-top:3px}
+.sub .val.red{color:var(--red)}
+.sub .note{font-size:9.5px;color:var(--ink-faint);margin-top:1px}
+.chart-box{position:relative;height:96px;margin-top:auto;padding-top:16px}
+.card-q{
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
+  font-style:italic;color:var(--ink-faint);font-size:12.5px;
+}
+.head-chart{position:absolute;right:28px;top:64px;width:170px;height:56px;opacity:.9}
+.card{position:relative}
+@media(max-width:560px){.head-chart{display:none}.substats{grid-template-columns:1fr 1fr}}
+
+/* ---------- projects ---------- */
+.chips{display:flex;gap:8px;margin-bottom:16px}
+.chip{
+  font-size:11px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);
+  color:var(--ink-dim);cursor:pointer;background:transparent;transition:all .15s;
+}
+.chip.active,.chip:hover{background:var(--teal);border-color:var(--teal);color:#04211d;font-weight:600}
+.chip:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.prj{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.prj:last-child{border-bottom:none}
+.prj .nm{font-family:'Fraunces',serif;font-size:15.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prj.action .nm{color:var(--red)}
+.prj .bar{width:130px;height:4px;border-radius:2px;background:var(--line);overflow:hidden;flex-shrink:0}
+.prj .bar i{display:block;height:100%;border-radius:2px}
+.prj .tag{width:118px;text-align:right;font-size:11.5px;font-weight:600;flex-shrink:0}
+.prj .tag span{display:block;font-weight:400;color:var(--ink-faint);font-size:10px}
+
+/* ---------- alert ---------- */
+.alert{
+  margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.35);
+  border-radius:10px;padding:10px 14px;font-size:12px;color:#ffb3b3;
+}
+.alert a{color:#ffd3d3;text-decoration:none;font-weight:600;white-space:nowrap}
+.alert a:hover{text-decoration:underline}
+
+/* ---------- footer ---------- */
+.foot{
+  margin-top:34px;font-family:'Fraunces',serif;font-style:italic;
+  color:var(--teal);font-size:15px;
+}
+.foot b{font-style:normal}
+.src-note{margin-top:8px;font-size:11px;color:var(--ink-faint)}
+.skel{color:var(--ink-faint)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="mark">dL</div>
+      <div>
+        <div class="name">Decision Lab</div>
+        <div class="sub">Control Room</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="pill" id="dataPill"><span class="dot"></span><span id="dataPillTxt">Sample data</span></div>
+      <button class="refresh" id="refreshBtn" type="button">Refresh</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="greet" id="dateLine">—</div>
+    <div class="eyebrow">Q1 · Management Reporting</div>
+    <h1 class="serif">The operational<br>health dashboard</h1>
+    <p>Page 1 — know the business health at a glance &amp; take actions immediately.</p>
+  </section>
+
+  <main class="grid">
+
+    <!-- 01 GROWTH -->
+    <section class="card" aria-label="Revenue vs plan">
+      <div class="card-head"><span class="card-title">Revenue vs Plan</span><span class="card-idx">01 · Growth</span></div>
+      <div class="big" id="revBig"><span class="skel">—</span></div>
+      <div class="delta" id="revDelta"></div>
+      <div class="head-chart"><canvas id="revSpark"></canvas></div>
+      <div class="substats">
+        <div class="sub"><div class="lbl">Booked</div><div class="val" id="revBooked">—</div></div>
+        <div class="sub"><div class="lbl">Plan</div><div class="val" id="revPlan">—</div></div>
+        <div class="sub"><div class="lbl">Pipeline</div><div class="val" id="revPipe">—</div></div>
+      </div>
+      <div class="chart-box"><canvas id="revChart"></canvas></div>
+      <div class="card-q">Are we growing?</div>
+    </section>
+
+    <!-- 02 ROI: margin -->
+    <section class="card" aria-label="Gross margin">
+      <div class="card-head"><span class="card-title">Gross Margin</span><span class="card-idx">02 · ROI</span></div>
+      <div class="big" id="gmBig"><span class="skel">—</span></div>
+      <div class="delta" id="gmDelta"></div>
+      <div class="head-chart"><canvas id="gmSpark"></canvas></div>
+      <div class="substats">
+        <div class="sub"><div class="lbl">Target</div><div class="val" id="gmTarget">—</div></div>
+        <div class="sub"><div class="lbl">YTD Avg</div><div class="val" id="gmYtd">—</div></div>
+        <div class="sub"><div class="lbl">Best</div><div class="val" id="gmBest">—</div><div class="note" id="gmBestNote"></div></div>
+      </div>
+      <div class="chart-box"><canvas id="gmChart"></canvas></div>
+      <div class="card-q">Are we earning?</div>
+    </section>
+
+    <!-- 03 ROI: project CM -->
+    <section class="card" aria-label="Project contribution margin ROI">
+      <div class="card-head"><span class="card-title">Project Contribution Margin ROI (CM ROI)</span><span class="card-idx">03 · ROI</span></div>
+      <div class="chips" id="prjChips">
+        <button class="chip active" data-f="all" type="button">All</button>
+        <button class="chip" data-f="healthy" type="button">Healthy</button>
+        <button class="chip" data-f="action" type="button">Action required</button>
+      </div>
+      <div id="prjList"></div>
+      <div class="card-q" style="margin-top:auto">Are we allocating resourcing efficiently?</div>
+    </section>
+
+    <!-- 04 CASHFLOW -->
+    <section class="card" aria-label="Cashflow, DSO and net payment gap">
+      <div class="card-head"><span class="card-title">Cashflow: DSO &amp; Net Payment Gap</span><span class="card-idx">04 · Cashflow</span></div>
+      <div class="big" id="cfBig"><span class="skel">—</span></div>
+      <div class="delta" id="cfDelta"></div>
+      <div class="head-chart"><canvas id="cfSpark"></canvas></div>
+      <div class="substats">
+        <div class="sub"><div class="lbl">Collected</div><div class="val" id="cfCollected">—</div></div>
+        <div class="sub"><div class="lbl">Overdue</div><div class="val red" id="cfOverdue">—</div></div>
+        <div class="sub"><div class="lbl">Net Gap</div><div class="val" id="cfGap">—</div></div>
+      </div>
+      <div class="alert" id="cfAlert" hidden>
+        <span id="cfAlertTxt">⚠ invoices &gt; 60 days.</span>
+        <a href="#" onclick="return false">Take action →</a>
+      </div>
+      <div class="card-q">Are we collecting?</div>
+    </section>
+
+  </main>
+
+  <div class="foot">The dashboard is built on 3 main indices: <b>Growth, ROI, Cashflow.</b></div>
+  <div class="src-note" id="srcNote">Running on embedded sample data. Paste your Google Sheet ID into CONFIG at the top of this file to go live.</div>
+</div>
+
+<script>
+/* ---------------- sample data (mirrors decision_lab_dashboard_data.xlsx) ---------------- */
+const SAMPLE = {
+  revenue: [
+    {month:"2026-01", booked_usd:1120000, plan_usd:1200000, pipeline_usd:2100000},
+    {month:"2026-02", booked_usd:1280000, plan_usd:1350000, pipeline_usd:2300000},
+    {month:"2026-03", booked_usd:1450000, plan_usd:1500000, pipeline_usd:2500000},
+    {month:"2026-04", booked_usd:1580000, plan_usd:1650000, pipeline_usd:2700000},
+    {month:"2026-05", booked_usd:1710000, plan_usd:1800000, pipeline_usd:2900000},
+    {month:"2026-06", booked_usd:1840000, plan_usd:1920000, pipeline_usd:3100000}
+  ],
+  margin: [
+    {month:"2026-01", gross_margin_pct:.30, target_pct:.34},
+    {month:"2026-02", gross_margin_pct:.31, target_pct:.34},
+    {month:"2026-03", gross_margin_pct:.32, target_pct:.34},
+    {month:"2026-04", gross_margin_pct:.33, target_pct:.34},
+    {month:"2026-05", gross_margin_pct:.33, target_pct:.34},
+    {month:"2026-06", gross_margin_pct:.35, target_pct:.34}
+  ],
+  projects: [
+    {project:"Singapore cosmetics brand tracker", client:"Confidential (SG)", cm_roi_pct:1.24, status:"Healthy"},
+    {project:"Vinamilk Gen-Z repositioning", client:"Vinamilk", cm_roi_pct:.98, status:"On track"},
+    {project:"Heineken Tet 2027 campaign pre-test", client:"Heineken VN", cm_roi_pct:.87, status:"On track"},
+    {project:"MoMo onboarding lift study", client:"MoMo", cm_roi_pct:.72, status:"Watch"},
+    {project:"Custom consulting engagement A", client:"Confidential", cm_roi_pct:.45, status:"Action required"}
+  ],
+  cashflow: [
+    {month:"2026-01", dso_days:31, target_dso:28, collected_usd:1050000, overdue_usd:240000, invoices_over_60d:4},
+    {month:"2026-02", dso_days:30, target_dso:28, collected_usd:1180000, overdue_usd:226000, invoices_over_60d:3},
+    {month:"2026-03", dso_days:29, target_dso:28, collected_usd:1300000, overdue_usd:210000, invoices_over_60d:3},
+    {month:"2026-04", dso_days:27, target_dso:28, collected_usd:1420000, overdue_usd:205000, invoices_over_60d:2},
+    {month:"2026-05", dso_days:26, target_dso:28, collected_usd:1520000, overdue_usd:198000, invoices_over_60d:2},
+    {month:"2026-06", dso_days:24, target_dso:28, collected_usd:1620000, overdue_usd:184000, invoices_over_60d:2}
+  ]
+};
+
+/* ---------------- helpers ---------------- */
+const $ = id => document.getElementById(id);
+const fmtM = v => v>=1e6 ? "$"+(v/1e6).toFixed(2).replace(/\.?0+$/,"")+"M"
+              : v>=1e3 ? "$"+Math.round(v/1e3)+"K" : "$"+v;
+const pct = (v,d=0) => (v*100).toFixed(d)+"%";
+const monLbl = m => { const [y,mm]=m.split("-"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mm-1]+" '"+y.slice(2); };
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+let charts = {};
+function killCharts(){ Object.values(charts).forEach(c=>c.destroy()); charts={}; }
+
+function baseOpts(extra={}){
+  return Object.assign({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{
+      backgroundColor:"#0c1513", borderColor:css("--line"), borderWidth:1,
+      titleColor:css("--ink"), bodyColor:css("--ink-dim"), padding:10, displayColors:false
+    }},
+    scales:{x:{display:false},y:{display:false}},
+    elements:{point:{radius:0,hoverRadius:4}}
+  }, extra);
+}
+
+/* ---------------- data loading ---------------- */
+async function fetchTab(tab){
+  const url = `https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${tab}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(tab+" HTTP "+res.status);
+  const text = await res.text();
+  const parsed = Papa.parse(text, {header:true, dynamicTyping:true, skipEmptyLines:true});
+  return parsed.data.map(r=>{
+    const o={};
+    for(const k in r){
+      const key = String(k).trim();
+      let v = r[k];
+      if(typeof v === "string"){
+        const cleaned = v.replace(/[$,]/g,"");
+        if(cleaned !== "" && !isNaN(cleaned) && key!=="month") v = parseFloat(cleaned);
+        else if(/^\d+(\.\d+)?%$/.test(v.trim())) v = parseFloat(v)/100;
+      }
+      o[key]=v;
+    }
+    return o;
+  });
+}
+
+async function loadData(){
+  if(!CONFIG.SHEET_ID){ return {data:SAMPLE, live:false}; }
+  try{
+    const [revenue,margin,projects,cashflow] = await Promise.all(CONFIG.TABS.map(fetchTab));
+    // normalize percentage columns possibly stored as 35 instead of 0.35
+    margin.forEach(r=>{ if(r.gross_margin_pct>1.5) r.gross_margin_pct/=100; if(r.target_pct>1.5) r.target_pct/=100; });
+    projects.forEach(r=>{ if(r.cm_roi_pct>10) r.cm_roi_pct/=100; });
+    return {data:{revenue,margin,projects,cashflow}, live:true};
+  }catch(e){
+    console.error("Sheet fetch failed, falling back to sample:", e);
+    return {data:SAMPLE, live:false, error:e.message};
+  }
+}
+
+/* ---------------- render ---------------- */
+let PRJ = [];
+
+function render(data, live, error){
+  killCharts();
+  const teal=css("--teal"), green=css("--green"), red=css("--red"), amber=css("--amber"),
+        dim=css("--ink-faint"), line=css("--line");
+
+  // status
+  const pill=$("dataPill");
+  pill.classList.toggle("live", live);
+  $("dataPillTxt").textContent = live ? "Live · Google Sheets" : "Sample data";
+  $("srcNote").textContent = live
+    ? "Connected to Google Sheets. Edit the sheet, then hit Refresh."
+    : (error ? "Sheet fetch failed ("+error+") — showing sample data. Check sharing is set to 'Anyone with the link'."
+             : "Running on embedded sample data. Paste your Google Sheet ID into CONFIG at the top of this file to go live.");
+
+  const rev=data.revenue, mar=data.margin, cf=data.cashflow;
+  const rL=rev[rev.length-1], mL=mar[mar.length-1], mP=mar[mar.length-2], cL=cf[cf.length-1];
+
+  // date line
+  $("dateLine").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"}).toUpperCase();
+
+  /* 01 revenue */
+  const attain = rL.booked_usd/rL.plan_usd;
+  $("revBig").textContent = Math.round(attain*100)+"%";
+  const gap = attain-1;
+  $("revDelta").innerHTML = (gap>=0?`<span class="up">↗ <b>${pct(Math.abs(gap))} ahead of plan</b></span>`:`<span class="bad">↘ <b>${pct(Math.abs(gap))} behind plan</b></span>`)+` &nbsp;<span style="color:var(--ink-faint)">${monLbl(rL.month)}</span>`;
+  $("revBooked").textContent = fmtM(rL.booked_usd);
+  $("revPlan").textContent = fmtM(rL.plan_usd);
+  $("revPipe").textContent = fmtM(rL.pipeline_usd);
+
+  const labels = rev.map(r=>monLbl(r.month));
+  charts.revSpark = new Chart($("revSpark"),{type:"line",data:{labels,datasets:[{data:rev.map(r=>r.booked_usd),borderColor:green,borderWidth:2,fill:{target:"origin"},backgroundColor:"rgba(143,227,168,.08)",tension:.35}]},options:baseOpts()});
+  charts.revChart = new Chart($("revChart"),{type:"line",data:{labels,datasets:[
+    {label:"Booked",data:rev.map(r=>r.booked_usd),borderColor:teal,borderWidth:2,tension:.35},
+    {label:"Plan",data:rev.map(r=>r.plan_usd),borderColor:dim,borderWidth:1.5,borderDash:[5,4],tension:.35}
+  ]},options:baseOpts({plugins:{legend:{display:true,position:"bottom",labels:{color:dim,boxWidth:8,boxHeight:8,usePointStyle:true,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtM(c.parsed.y)},backgroundColor:"#0c1513",borderColor:line,borderWidth:1,titleColor:"#eef4f2",bodyColor:"#8fa39e",padding:10}}})});
+
+  /* 02 margin */
+  $("gmBig").textContent = pct(mL.gross_margin_pct);
+  const mom = mL.gross_margin_pct - (mP?mP.gross_margin_pct:mL.gross_margin_pct);
+  $("gmDelta").innerHTML = `<span class="${mom>=0?"up":"bad"}">${mom>=0?"↗":"↘"} <b>${(mom*100).toFixed(0)}pp MoM</b></span> &nbsp;<span style="color:var(--ink-faint)">vs ${mP?monLbl(mP.month):"—"} ${mP?pct(mP.gross_margin_pct):""}</span>`;
+  $("gmTarget").textContent = pct(mL.target_pct);
+  $("gmYtd").textContent = pct(mar.reduce((s,r)=>s+r.gross_margin_pct,0)/mar.length);
+  const best = mar.reduce((a,b)=>b.gross_margin_pct>a.gross_margin_pct?b:a);
+  $("gmBest").textContent = pct(best.gross_margin_pct);
+  $("gmBestNote").textContent = monLbl(best.month);
+  charts.gmSpark = new Chart($("gmSpark"),{type:"line",data:{labels,datasets:[{data:mar.map(r=>r.gross_margin_pct),borderColor:teal,borderWidth:2,tension:.35}]},options:baseOpts()});
+  charts.gmChart = new Chart($("gmChart"),{type:"line",data:{labels,datasets:[
+    {label:"Gross margin",data:mar.map(r=>r.gross_margin_pct),borderColor:teal,borderWidth:2,tension:.35},
+    {label:"Target",data:mar.map(r=>r.target_pct),borderColor:dim,borderWidth:1.5,borderDash:[5,4],tension:0}
+  ]},options:baseOpts({plugins:{legend:{display:true,position:"bottom",labels:{color:dim,boxWidth:8,boxHeight:8,usePointStyle:true,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+pct(c.parsed.y,1)},backgroundColor:"#0c1513",borderColor:line,borderWidth:1,titleColor:"#eef4f2",bodyColor:"#8fa39e",padding:10}}})});
+
+  /* 03 projects */
+  PRJ = data.projects;
+  drawProjects("all");
+
+  /* 04 cashflow */
+  $("cfBig").innerHTML = cL.dso_days+"<small>days</small>";
+  const dsoGap = cL.dso_days - cL.target_dso;
+  $("cfDelta").innerHTML = `<span class="${dsoGap<=0?"up":"bad"}">${dsoGap<=0?"↘":"↗"} <b>${Math.abs(dsoGap)} days ${dsoGap<=0?"to":"over"} plan</b></span> &nbsp;<span style="color:var(--ink-faint)">target ${cL.target_dso}d</span>`;
+  $("cfCollected").textContent = fmtM(cL.collected_usd);
+  $("cfOverdue").textContent = fmtM(cL.overdue_usd);
+  $("cfGap").textContent = (dsoGap>0?"+":"")+dsoGap+" days";
+  const inv = cL.invoices_over_60d||0;
+  $("cfAlert").hidden = inv<=0;
+  $("cfAlertTxt").textContent = `⚠ ${inv} invoice${inv>1?"s":""} > 60 days.`;
+  charts.cfSpark = new Chart($("cfSpark"),{type:"bar",data:{labels,datasets:[{data:cf.map(r=>r.dso_days),backgroundColor:cf.map((r,i)=>i===cf.length-1?teal:line),borderRadius:3}]},options:baseOpts({plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" days DSO"},backgroundColor:"#0c1513",borderColor:line,borderWidth:1,titleColor:"#eef4f2",bodyColor:"#8fa39e",padding:10}}})});
+}
+
+function drawProjects(filter){
+  const teal=css("--teal"), green=css("--green"), red=css("--red"), amber=css("--amber");
+  const colorOf = s => s==="Healthy"?green : s==="Watch"?amber : s==="Action required"?red : teal;
+  const list = PRJ.filter(p=>{
+    if(filter==="all") return true;
+    if(filter==="healthy") return ["Healthy","On track"].includes(p.status);
+    return p.status==="Action required";
+  }).sort((a,b)=>b.cm_roi_pct-a.cm_roi_pct);
+  $("prjList").innerHTML = list.map(p=>`
+    <div class="prj ${p.status==="Action required"?"action":""}">
+      <div class="nm" title="${p.project} — ${p.client}">${p.project}</div>
+      <div class="bar"><i style="width:${Math.min(100,p.cm_roi_pct*80)}%;background:${colorOf(p.status)}"></i></div>
+      <div class="tag" style="color:${colorOf(p.status)}">${Math.round(p.cm_roi_pct*100)}%<span>${p.status}</span></div>
+    </div>`).join("") || `<div style="color:var(--ink-faint);padding:20px 0">No projects in this view.</div>`;
+}
+
+document.getElementById("prjChips").addEventListener("click", e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+  b.classList.add("active");
+  drawProjects(b.dataset.f);
+});
+
+async function boot(){
+  const {data,live,error} = await loadData();
+  render(data,live,error);
+}
+document.getElementById("refreshBtn").addEventListener("click", boot);
+boot();
+</script>
+</body>
+</html>
